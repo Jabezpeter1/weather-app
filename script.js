@@ -1,4 +1,13 @@
-const API_KEY = "8c489a48d22949fbe9ca7d8b7ee22543"; // <-- Replace with your OpenWeatherMap API key
+const API_KEY = "YOUR_API_KEY_HERE"; // <-- Replace with your OpenWeatherMap API key
+
+document.getElementById("searchBtn").addEventListener("click", getWeather);
+document.getElementById("cityInput").addEventListener("keyup", (e) => {
+  if (e.key === "Enter") getWeather();
+});
+
+function kelvinToCelsius(k) {
+  return (k - 273.15).toFixed(1);
+}
 
 async function getWeather() {
   const city = document.getElementById("cityInput").value.trim();
@@ -33,9 +42,8 @@ async function getWeather() {
   }
 }
 
-// Display current weather info
 function displayCurrent(data) {
-  const temp = (data.main.temp - 273.15).toFixed(1);
+  const temp = kelvinToCelsius(data.main.temp);
   const condition = data.weather[0].description;
   const icon = data.weather[0].icon;
   const html = `
@@ -47,18 +55,17 @@ function displayCurrent(data) {
   document.getElementById("current-weather").innerHTML = html;
 }
 
-// Show next 6 hours forecast (two 3-hour intervals)
 function displayHourlyForecast(data) {
   const container = document.getElementById("hourly-forecast");
   container.innerHTML = "";
 
-  // First 2 intervals = 6 hours (3 hours each)
+  // Next 6 hours = next 2 intervals (3h each)
   const nextSixHours = data.list.slice(0, 2);
 
   nextSixHours.forEach(item => {
     const dateTime = new Date(item.dt_txt);
     const timeStr = dateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const temp = (item.main.temp - 273.15).toFixed(1);
+    const temp = kelvinToCelsius(item.main.temp);
     const icon = item.weather[0].icon;
     const description = item.weather[0].description;
 
@@ -74,17 +81,15 @@ function displayHourlyForecast(data) {
   });
 }
 
-// Show 5-day forecast with daily high & low
 function displayDailyForecast(data) {
   const container = document.getElementById("daily-forecast");
   container.innerHTML = "";
 
-  // Group by date: find high & low temps per day
   const dailyTemps = {};
 
   data.list.forEach(item => {
     const date = item.dt_txt.split(" ")[0];
-    const temp = item.main.temp - 273.15; // Kelvin to Celsius
+    const temp = item.main.temp - 273.15;
 
     if (!dailyTemps[date]) {
       dailyTemps[date] = {
@@ -98,7 +103,6 @@ function displayDailyForecast(data) {
     }
   });
 
-  // Display only next 5 days
   Object.keys(dailyTemps).slice(0, 5).forEach(date => {
     const dayName = new Date(date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
     const { high, low, icon } = dailyTemps[date];
@@ -115,23 +119,19 @@ function displayDailyForecast(data) {
   });
 }
 
-// Draw temperature trend chart for next 5 days (every 3 hours)
 function displayChart(data) {
   const ctx = document.getElementById("weatherChart").getContext("2d");
 
-  // Prepare labels and temps
   const labels = [];
   const temps = [];
 
-  // Limit to next 40 data points max (5 days * 8 intervals)
   data.list.slice(0, 40).forEach(item => {
     const dateTime = new Date(item.dt_txt);
-    const label = dateTime.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const label = dateTime.toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit' });
     labels.push(label);
-    temps.push((item.main.temp - 273.15).toFixed(1));
+    temps.push(kelvinToCelsius(item.main.temp));
   });
 
-  // Destroy old chart if exists to avoid duplication
   if (window.myChart) window.myChart.destroy();
 
   window.myChart = new Chart(ctx, {
@@ -155,4 +155,42 @@ function displayChart(data) {
         y: {
           beginAtZero: false,
           title: {
-            display: true
+            display: true,
+            text: "Temperature (°C)"
+          }
+        }
+      }
+    }
+  });
+}
+
+function saveHistory(city) {
+  let history = JSON.parse(localStorage.getItem("weatherSearchHistory")) || [];
+  // Avoid duplicates
+  if (!history.includes(city)) {
+    history.unshift(city);
+    if (history.length > 5) history.pop();
+    localStorage.setItem("weatherSearchHistory", JSON.stringify(history));
+  }
+}
+
+function displayHistory() {
+  const container = document.getElementById("history");
+  container.innerHTML = "";
+  const history = JSON.parse(localStorage.getItem("weatherSearchHistory")) || [];
+
+  history.forEach(city => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.textContent = city;
+    card.style.cursor = "pointer";
+    card.onclick = () => {
+      document.getElementById("cityInput").value = city;
+      getWeather();
+    };
+    container.appendChild(card);
+  });
+}
+
+// Load history on page load
+window.onload = displayHistory;
