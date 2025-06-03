@@ -1,4 +1,4 @@
-const API_KEY = "8c489a48d22949fbe9ca7d8b7ee22543 "; // Replace with your OpenWeatherMap API key
+const API_KEY = "YOUR_API_KEY"; // ← Replace this with your OpenWeatherMap API key
 
 async function getWeather() {
   const city = document.getElementById("cityInput").value.trim();
@@ -10,8 +10,12 @@ async function getWeather() {
   try {
     const [currentRes, forecastRes] = await Promise.all([
       fetch(currentUrl),
-      fetch(forecastUrl),
+      fetch(forecastUrl)
     ]);
+
+    if (!currentRes.ok || !forecastRes.ok) {
+      throw new Error("API request failed");
+    }
 
     const currentData = await currentRes.json();
     const forecastData = await forecastRes.json();
@@ -21,9 +25,10 @@ async function getWeather() {
     displayChart(forecastData);
     saveHistory(currentData);
     displayHistory();
+
   } catch (err) {
-    alert("Could not fetch weather data.");
-    console.error(err);
+    alert("❌ Could not fetch weather data. Please check the city name or try again later.");
+    console.error("Fetch error:", err);
   }
 }
 
@@ -55,7 +60,6 @@ function displayForecast(data) {
     const temp = (item.main.temp - 273.15).toFixed(1);
     const icon = item.weather[0].icon;
     const date = new Date(item.dt_txt).toLocaleDateString();
-
     const div = document.createElement("div");
     div.className = "card";
     div.innerHTML = `
@@ -72,7 +76,7 @@ function displayChart(data) {
   const temps = [];
 
   data.list.forEach(item => {
-    labels.push(item.dt_txt.slice(5, 16)); // MM-DD HH:mm
+    labels.push(item.dt_txt.slice(5, 16));
     temps.push((item.main.temp - 273.15).toFixed(1));
   });
 
@@ -106,7 +110,6 @@ function saveHistory(data) {
   const icon = data.weather[0].icon;
 
   const entry = { date, temp, icon };
-
   let history = JSON.parse(localStorage.getItem("weatherHistory")) || [];
   if (!history.some(item => item.date === date)) {
     history.push(entry);
@@ -118,7 +121,6 @@ function displayHistory() {
   const history = JSON.parse(localStorage.getItem("weatherHistory")) || [];
   const container = document.getElementById("history");
   container.innerHTML = "";
-
   history.slice(-5).forEach(item => {
     const div = document.createElement("div");
     div.className = "card";
@@ -131,7 +133,6 @@ function displayHistory() {
   });
 }
 
-// Allow ENTER key to trigger search
 document.getElementById("cityInput").addEventListener("keyup", function (event) {
   if (event.key === "Enter") {
     getWeather();
