@@ -4,21 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Weather App</title>
-  <link rel="stylesheet" href="style.css" />
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js for graph -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>🌤️ Weather App</h1>
-    
-    <div class="search-section">
-      <input type="text" id="cityInput" placeholder="Enter city name" />
-      <button onclick="getWeather()">Get Weather</button>
+<body class="bg-gradient-to-b from-blue-100 via-blue-200 to-blue-300 min-h-screen p-6 font-sans">
+  <div class="max-w-3xl mx-auto bg-white shadow-xl rounded-2xl p-6">
+    <h1 class="text-3xl font-bold text-center text-blue-700 mb-6">🌤️ Weather App</h1>
+
+    <!-- Search Section -->
+    <div class="flex gap-2 justify-center mb-6">
+      <input
+        type="text"
+        id="cityInput"
+        placeholder="Enter city name"
+        class="border border-gray-300 rounded-md px-4 py-2 w-2/3 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+      <button
+        onclick="getWeather()"
+        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+      >
+        Get Weather
+      </button>
     </div>
 
-    <div id="weatherResult" class="result-box"></div>
+    <!-- Weather Results -->
+    <div id="weatherResult" class="space-y-6"></div>
 
-    <h2>Search History</h2>
-    <ul id="historyList" class="history-list"></ul>
+    <!-- Forecast Graph -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">📊 Temperature Trend</h2>
+      <canvas id="weatherChart" class="w-full h-64"></canvas>
+    </div>
+
+    <!-- Search History -->
+    <div class="mt-8">
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">📍 Search History</h2>
+      <div id="historyList" class="flex flex-wrap gap-2"></div>
+    </div>
   </div>
 
   <script src="script.js"></script>
