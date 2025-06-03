@@ -1,4 +1,4 @@
-const API_KEY = "8c489a48d22949fbe9ca7d8b7ee22543"; // Replace this with your OpenWeatherMap API key
+const API_KEY = "8c489a48d229fbe9ca7d8b7ee22543"; // Replace with your OpenWeatherMap API key
 
 async function getWeather() {
   const city = document.getElementById("cityInput").value.trim();
@@ -22,7 +22,7 @@ async function getWeather() {
     saveHistory(currentData);
     displayHistory();
   } catch (err) {
-    alert("Error fetching weather data.");
+    alert("Could not fetch weather data.");
     console.error(err);
   }
 }
@@ -32,7 +32,7 @@ function displayCurrent(data) {
   const condition = data.weather[0].description;
   const html = `
     <h3>${data.name}</h3>
-    <p>${temp} °C</p>
+    <p><strong>${temp} °C</strong></p>
     <p>${condition}</p>
     <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}.png" />
   `;
@@ -57,7 +57,7 @@ function displayForecast(data) {
     const date = new Date(item.dt_txt).toLocaleDateString();
 
     const div = document.createElement("div");
-    div.className = "forecast-card";
+    div.className = "card";
     div.innerHTML = `
       <h4>${date}</h4>
       <img src="https://openweathermap.org/img/wn/${icon}.png" />
@@ -84,19 +84,19 @@ function displayChart(data) {
       datasets: [{
         label: "Temp (°C)",
         data: temps,
-        borderColor: "rgb(75, 192, 192)",
-        tension: 0.4,
-        fill: false,
-      }],
+        borderColor: "#3498db",
+        backgroundColor: "rgba(52,152,219,0.2)",
+        tension: 0.3,
+      }]
     },
     options: {
       responsive: true,
       scales: {
         y: {
-          beginAtZero: false,
+          beginAtZero: false
         }
       }
-    },
+    }
   });
 }
 
@@ -121,7 +121,7 @@ function displayHistory() {
 
   history.slice(-5).forEach(item => {
     const div = document.createElement("div");
-    div.className = "history-card";
+    div.className = "card";
     div.innerHTML = `
       <h4>${item.date}</h4>
       <img src="https://openweathermap.org/img/wn/${item.icon}.png" />
@@ -131,7 +131,7 @@ function displayHistory() {
   });
 }
 
-// ENTER KEY SUPPORT
+// Allow ENTER key to trigger search
 document.getElementById("cityInput").addEventListener("keyup", function (event) {
   if (event.key === "Enter") {
     getWeather();
