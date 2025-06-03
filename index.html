@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Weather App</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Weather App</title>
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>🌤️ Weather Forecast</h1>
     <div class="search-bar">
-      <input type="text" id="cityInput" placeholder="Enter city name..." />
-      <button onclick="getWeather()">Search</button>
+      <input id="cityInput" placeholder="Enter city name..." />
+      <button id="searchBtn">Search</button>
     </div>
 
     <div id="current-weather" class="card highlight"></div>
@@ -20,7 +20,7 @@
     <h2>🕒 Next 6 Hours Forecast (3-hour intervals)</h2>
     <div id="hourly-forecast" class="card-grid"></div>
 
-    <h2>📅 5-Day Forecast (Daily High & Low)</h2>
+    <h2>📅 5-Day Forecast (High & Low Temps)</h2>
     <div id="daily-forecast" class="card-grid"></div>
 
     <h2>📊 Temperature Trend (Next 5 Days)</h2>
@@ -31,6 +31,7 @@
     <h2>🕓 Past Searches</h2>
     <div id="history" class="card-grid"></div>
   </div>
-  <script src="script.js"></script>
+
+<script src="script.js"></script>
 </body>
 </html>
