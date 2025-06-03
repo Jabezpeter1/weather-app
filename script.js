@@ -5,6 +5,9 @@ const chartCanvas = document.getElementById("weatherChart").getContext("2d");
 
 let searchHistory = JSON.parse(localStorage.getItem("history")) || [];
 let weatherChart;
+if (!response.ok) {
+  throw new Error(`HTTP error! status: ${response.status}`);
+}
 
 window.onload = () => {
   renderHistory();
